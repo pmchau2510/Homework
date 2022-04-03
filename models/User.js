@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
-        required: true
     },
     name: {
         type: String,
-        required: true
+    },
+    password: {
+        type: String,
     },
     image: {
         type: String,
-        required: true
     },
     isAdmin: {
         type: Boolean,

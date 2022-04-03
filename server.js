@@ -1,14 +1,22 @@
 const express = require('express');
-const app = express();
-const path = require('path');
 const connectDB = require('./config/connect');
 const dotenv = require('dotenv');
 const passport = require('passport');
-const session = require('express-session');
 const morgan = require('morgan');
-
+const session = require('express-session');
+const MongoStore = require('connect-mongo')
+const indexRoutes = require('./routes/index');
+const authRoutes = require('./routes/auth');
+const documentRoutes = require('./routes/document');
+const app = express();
 //Load config
-dotenv.config({ path: './config/config.env' });
+dotenv.config({ path: './config/.env' });
+
+//Body parser
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.set('view engine', 'ejs');
 
 //Passport config
 require('./config/passport')(passport);
@@ -23,23 +31,24 @@ app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, }),
 }));
 
 //Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Static folder
-app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
+app.use('/', indexRoutes);
+app.use('/auth', authRoutes);
+app.use('/admin', documentRoutes);
 
 const PORT = process.env.PORT || 3000;
-const start = async() => {
+const start = async () => {
     try {
         await connectDB();
-        app.listen(PORT, console.log(`Server is listening in PORT ${port}...`));
+        app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));
     } catch (error) {
         console.log(error);
     }
