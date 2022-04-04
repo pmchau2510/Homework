@@ -7,12 +7,15 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')
 const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 const documentRoutes = require('./routes/document');
+// const path = require('path');
 const app = express();
 //Load config
 dotenv.config({ path: './config/.env' });
 
 //Body parser
+// app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -22,7 +25,7 @@ app.set('view engine', 'ejs');
 require('./config/passport')(passport);
 
 //Logging
-if (process.env.NODE_ENV == 'development') {
+if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
@@ -42,10 +45,11 @@ app.use(passport.session());
 //Routes
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
-app.use('/admin', documentRoutes);
+app.use('/api/admin/documents', documentRoutes);
+app.use('/api/documentUser', userRoutes);
 
 const PORT = process.env.PORT || 3000;
-const start = async () => {
+const start = async() => {
     try {
         await connectDB();
         app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));

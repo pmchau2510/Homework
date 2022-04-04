@@ -1,4 +1,3 @@
-const User = require('../models/User');
 module.exports = {
     ensureAuth: (req, res, next) => {
         if (req.isAuthenticated()) {

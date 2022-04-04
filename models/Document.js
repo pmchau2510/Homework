@@ -12,11 +12,9 @@ const documentSchema = new mongoose.Schema({
     },
     url: {
         type: String,
-        required: true
     },
     postedBy: {
         type: String,
-        required: true
     },
 }, {
     timestamps: true,

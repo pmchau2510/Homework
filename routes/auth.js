@@ -30,7 +30,7 @@ router.get('/logout', (req, res) => {
 });
 
 
-router.post('/admin/login', ensureGuest, async (req, res, next) => {
+router.post('/login', ensureGuest, async(req, res, next) => {
     const name = req.body.name;
     const pass = req.body.password;
     const user = await User.findOne({ name });
