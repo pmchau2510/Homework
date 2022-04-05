@@ -2,6 +2,7 @@ const Document = require('../models/Document');
 const Confirm = require('../models/Confirm');
 const asyncHandler = require('express-async-handler');
 const getAllDocs = asyncHandler(async(req, res) => {
+
     const pageSize = 12;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
@@ -11,8 +12,7 @@ const getAllDocs = asyncHandler(async(req, res) => {
         .limit(pageSize)
         .skip(pageSize * (page - 1))
         .sort(sort)
-
-    res.stauts(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
+    res.status(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
 });
 
 const getAllUsers = asyncHandler(async(req, res) => {
