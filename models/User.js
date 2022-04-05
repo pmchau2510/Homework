@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const userSchema = new mongoose.Schema({
-    googleId: {
+    socialId: {
         type: String,
     },
     name: {
@@ -9,15 +10,18 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
     },
-    image: {
+    avatar: {
         type: String,
     },
-    isAdmin: {
-        type: Boolean,
-        default: false
+    role: {
+        type: Number,
+        required: true,
+        default: 0
     },
 }, {
     timestamps: true,
 });
+
+userSchema.plugin(mongoose_delete);
 
 module.exports = mongoose.model('User', userSchema);

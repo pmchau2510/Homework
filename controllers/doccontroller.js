@@ -12,7 +12,7 @@ const getAllDocs = asyncHandler(async(req, res) => {
         .skip(pageSize * (page - 1))
         .sort(sort)
 
-    res.json({ docs, page, pages: Math.ceil(count / pageSize), count });
+    res.stauts(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
 });
 
 const getAllUsers = asyncHandler(async(req, res) => {
@@ -20,14 +20,14 @@ const getAllUsers = asyncHandler(async(req, res) => {
 });
 
 const createDoc = asyncHandler(async(req, res) => {
-    const data = {
+    const body = {
         title: req.body.title,
         description: req.body.description,
         url: req.body.url,
         postedBy: req.user._id,
     }
-    const docs = await Document.create(data);
-    res.status(202).json({ docs });
+    const docs = await Document.create(body);
+    res.status(200).json({ docs });
 });
 
 const updateDoc = asyncHandler(async(req, res) => {
@@ -37,7 +37,7 @@ const updateDoc = asyncHandler(async(req, res) => {
         runValidators: true,
     });
     if (!doc) {
-        return res.status(404).json({
+        return res.status(400).json({
             messagee: 'No doc with id'
         });
 
@@ -49,7 +49,7 @@ const deleteDoc = asyncHandler(async(req, res) => {
     const { id: docId } = req.params;
     const doc = await Document.findOneAndDelete({ _id: docId });
     if (!doc) {
-        return res.status(404).json({
+        return res.status(400).json({
             messagee: 'No doc with id'
         });
 
@@ -58,7 +58,7 @@ const deleteDoc = asyncHandler(async(req, res) => {
 });
 
 const uploadFile = asyncHandler((req, res) => {
-    console.log(req.file)
+    // console.log(req.file)
     res.status(200).json({ message: "File created successfuly!!" });
 });
 
@@ -73,7 +73,7 @@ const assignUsers = asyncHandler(async(req, res) => {
         const confirms = await Confirm.insertMany(users);
         res.json(confirms);
     } else {
-        res.status(404).json({ error: 'Document not found' })
+        res.status(400).json({ error: 'Document not found' })
     }
 
 });

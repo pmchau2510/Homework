@@ -1,21 +1,25 @@
 const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
+
+
 const confirmSchema = new mongoose.Schema({
 
-    user: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
     },
-    document: {
+    docId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Document'
+        ref: 'Document',
     },
     status: {
         type: String,
-        default: 'Open'
+        required: true,
+        default: 'Open',
     },
 
 }, {
     timestamps: true,
 });
-
+confirmSchema.plugin(mongoose_delete);
 module.exports = mongoose.model('Confirm', confirmSchema);

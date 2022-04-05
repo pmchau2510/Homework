@@ -5,27 +5,26 @@ const bcrypt = require('bcrypt');
 module.exports = (passport) => {
     passport.use(
         new GoogleStrategy({
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: '/auth/google/callback',
-        },
-            async (accessToken, refreshToken, profile, done) => {
+                clientID: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                callbackURL: '/auth/google/callback',
+            },
+            async(accessToken, refreshToken, profile, done) => {
                 // console.log(profile);
-
+                // console.log(accessToken);
                 const newUser = {
-                    googleId: profile.id,
+                    socialId: profile.id,
                     name: profile.displayName,
-                    image: profile.photos[0].value,
+                    avatar: profile.photos[0].value,
                 }
 
                 try {
-                    let user = await User.findOne({ googleId: profile.id })
-
+                    let user = await User.findOne({ socialId: profile.id })
                     if (user) {
-                        done(null, user)
+                        return done(null, user)
                     } else {
                         user = await User.create(newUser)
-                        done(null, user)
+                        return done(null, user);
                     }
                 } catch (err) {
                     console.error(err)
@@ -34,21 +33,21 @@ module.exports = (passport) => {
         )
 
     )
-    passport.use(new LocalStrategy({ usernameField: 'name' }, async (name, password, done) => {
+    passport.use('login', new LocalStrategy({ usernameField: 'name', passwordField: 'password' }, async(name, password, done) => {
         try {
             const user = await User.findOne({ name });
-            if (user) {
-                const validPassword = await bcrypt.compare(password, user.password);
-                if (validPassword) {
-                    done(null, user);
-                } else {
-                    done(null, false);
-                }
-            } else {
-                done(null, false);
+
+            if (!user) {
+                return done(null, false);
             }
+            const validPassword = await bcrypt.compare(password, user.password);
+
+            if (!validPassword) {
+                return done(null, false);
+            }
+            return done(null, user);
         } catch (error) {
-            console.error(err);
+            return done(error);
         }
     }));
     passport.serializeUser((user, done) => {
