@@ -34,18 +34,15 @@ router.get('/logout', (req, res) => {
     });
 });
 
-router.post("/signup", async(req, res) => {
-    const body = req.body;
-
-
-    // creating a new mongoose doc from user data
-    const user = new User(body);
-    // generate salt to hash password
-    const salt = await bcrypt.genSalt(10);
-    // now we set user password to hashed password
-    user.password = await bcrypt.hash(user.password, salt);
-    user.save().then((doc) => res.status(201).send(doc));
-});
+router.post('/signup', ensureGuest,
+    passport.authenticate('signup', { session: false }),
+    async(req, res, next) => {
+        res.json({
+            message: 'Signup successful',
+            user: req.user
+        });
+    }
+);
 router.post('/login', ensureGuest, async(req, res, next) => {
     passport.authenticate(
         'login',

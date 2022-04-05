@@ -1,5 +1,6 @@
 const Document = require('../models/Document');
 const Confirm = require('../models/Confirm');
+const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
 const getAllDocs = asyncHandler(async(req, res) => {
 
@@ -16,7 +17,24 @@ const getAllDocs = asyncHandler(async(req, res) => {
 });
 
 const getAllUsers = asyncHandler(async(req, res) => {
+    const document = await Document.findById(req.params.id)
+    const userConfirms = []
+    let query = { role: { $ne: 9 } };
 
+    if (document) {
+        const confirms = await Confirm.find({ document: req.params.id })
+
+        if (confirms) {
+            confirms.map((c) => (userConfirms.push(c.user)))
+            query = { _id: { $nin: userConfirms }, role: { $ne: 9 } }
+        }
+
+        const users = await User.find(query)
+
+        res.json(users)
+    } else {
+        res.status(400).json({ error: 'Document not found' });
+    }
 });
 
 const createDoc = asyncHandler(async(req, res) => {
