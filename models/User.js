@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mongoose_delete = require('mongoose-delete');
 const userSchema = new mongoose.Schema({
     socialId: {
         type: String,
@@ -22,6 +21,5 @@ const userSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-userSchema.plugin(mongoose_delete);
 
 module.exports = mongoose.model('User', userSchema);

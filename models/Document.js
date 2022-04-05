@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongoose_delete = require('mongoose-delete');
+const mongooseDelete = require('mongoose-delete');
 
 const documentSchema = new mongoose.Schema({
     title: {
@@ -22,6 +22,9 @@ const documentSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
-documentSchema.plugin(mongoose_delete);
+documentSchema.plugin(mongooseDelete,{
+    deletedAt: true,
+    overrideMethods: 'all',
+});
 
 module.exports = mongoose.model('Document', documentSchema);

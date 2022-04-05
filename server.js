@@ -5,7 +5,7 @@ const cors = require('cors');
 const passport = require('passport');
 const morgan = require('morgan');
 const session = require('express-session');
-const MongoStore = require('connect-mongo')
+const MongoStore = require('connect-mongo');
 const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
@@ -42,10 +42,10 @@ app.use(passport.session());
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/admin/documents', documentRoutes);
-app.use('/api/User', userRoutes);
+app.use('/api/user', userRoutes);
 
 const PORT = process.env.PORT || 3000;
-const start = async() => {
+const start = async () => {
     try {
         await connectDB();
         app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));

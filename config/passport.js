@@ -5,11 +5,11 @@ const bcrypt = require('bcrypt');
 module.exports = (passport) => {
     passport.use(
         new GoogleStrategy({
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: '/auth/google/callback',
-            },
-            async(accessToken, refreshToken, profile, done) => {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: '/auth/google/callback',
+        },
+            async (accessToken, refreshToken, profile, done) => {
                 // console.log(profile);
                 // console.log(accessToken);
                 const newUser = {
@@ -36,14 +36,14 @@ module.exports = (passport) => {
     passport.use(
         'signup',
         new LocalStrategy({
-                usernameField: 'name',
-                passwordField: 'password'
-            },
-            async(name, password, done) => {
+            usernameField: 'name',
+            passwordField: 'password'
+        },
+            async (name, password, done) => {
                 try {
                     const user = await User.findOne({ name });
                     if (!(name && password)) {
-                        return res.status(400).send({ error: "Data not formatted properly" });
+                        return res.status(400).json({ error: "Data not formatted properly" });
                     }
                     if (!user) {
                         const userr = new User({ name, password });
@@ -59,7 +59,7 @@ module.exports = (passport) => {
             }
         )
     );
-    passport.use('login', new LocalStrategy({ usernameField: 'name', passwordField: 'password' }, async(name, password, done) => {
+    passport.use('login', new LocalStrategy({ usernameField: 'name', passwordField: 'password' }, async (name, password, done) => {
         try {
             const user = await User.findOne({ name });
 
