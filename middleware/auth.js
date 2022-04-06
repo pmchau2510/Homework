@@ -2,13 +2,7 @@ const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 module.exports = {
-    ensureGuest: (req, res, next) => {
-        if (req.isAuthenticated()) {
-            res.status(400).json({ messsage: "You are logged in" });
-        } else {
-            return next();
-        }
-    },
+
     isAdmin: (req, res, next) => {
         if (req.isAuthenticated() && req.user.role == 9) {
             return next();

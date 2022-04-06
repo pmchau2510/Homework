@@ -4,7 +4,6 @@ const mongooseDelete = require('mongoose-delete');
 const documentSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
         trim: true,
     },
     description: {
@@ -22,7 +21,7 @@ const documentSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
-documentSchema.plugin(mongooseDelete,{
+documentSchema.plugin(mongooseDelete, {
     deletedAt: true,
     overrideMethods: 'all',
 });
