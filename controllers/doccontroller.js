@@ -2,7 +2,7 @@ const Document = require('../models/Document');
 const Confirm = require('../models/Confirm');
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
-const getAllDocs = asyncHandler(async (req, res) => {
+const getAllDocs = asyncHandler(async(req, res) => {
 
     const pageSize = 12;
     const page = Number(req.query.pageNumber) || 1;
@@ -16,7 +16,7 @@ const getAllDocs = asyncHandler(async (req, res) => {
     res.status(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
 });
 
-const getAllUsers = asyncHandler(async (req, res) => {
+const getAllUsers = asyncHandler(async(req, res) => {
     const document = await Document.findById(req.params.id);
     const userConfirms = [];
     let query = { role: { $ne: 9 } };
@@ -38,7 +38,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
     }
 });
 
-const createDoc = asyncHandler(async (req, res) => {
+const createDoc = asyncHandler(async(req, res) => {
     const body = {
         title: req.body.title,
         description: req.body.description,
@@ -49,7 +49,7 @@ const createDoc = asyncHandler(async (req, res) => {
     res.status(200).json({ docs });
 });
 
-const updateDoc = asyncHandler(async (req, res) => {
+const updateDoc = asyncHandler(async(req, res) => {
     const { id: docId } = req.params;
     const doc = await Document.findOneAndUpdate({ _id: docId }, req.body, {
         new: true,
@@ -64,7 +64,7 @@ const updateDoc = asyncHandler(async (req, res) => {
     res.status(200).json({ doc });
 });
 
-const deleteDoc = asyncHandler(async (req, res) => {
+const deleteDoc = asyncHandler(async(req, res) => {
     const { id: docId } = req.params;
     const doc = await Document.delete({ _id: docId });
     await Confirm.delete({ docId });
@@ -82,12 +82,12 @@ const uploadFile = asyncHandler((req, res) => {
     res.status(200).json({ message: "File created successfuly!!" });
 });
 
-const assignUsers = asyncHandler(async (req, res) => {
+const assignUsers = asyncHandler(async(req, res) => {
     const { id: docId } = req.params;
     const doc = await Document.findOne({ _id: docId });
     if (doc) {
         const [...users] = req.body.userIds;
-        users.forEach(function (user) {
+        users.forEach(function(user) {
             user.doc = req.params.id
         });
         const confirms = await Confirm.insertMany(users);

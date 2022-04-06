@@ -16,11 +16,10 @@ const storage = multer.diskStorage({
 const uploadStorage = multer({ storage: storage })
 const singleFile = uploadStorage.single("file");
 router.get('/', authenticationMiddleware, isAdmin, getAllDocs);
-router.get('/:id', authenticationMiddleware, isAdmin, getAllUsers);
-router.post('/upload', authenticationMiddleware, isAdmin, singleFile, uploadFile)
-router.post('/', authenticationMiddleware, isAdmin, createDoc);
+router.get('/confirm/:id', authenticationMiddleware, isAdmin, getAllUsers);
+router.post('/', authenticationMiddleware, isAdmin, singleFile, createDoc);
 router.post('/:id/assign', authenticationMiddleware, isAdmin, assignUsers);
-router.patch('/:id', authenticationMiddleware, isAdmin, updateDoc);
+router.patch('/:id', authenticationMiddleware, isAdmin, singleFile, updateDoc);
 router.delete('/:id', authenticationMiddleware, isAdmin, deleteDoc);
 
 module.exports = router;

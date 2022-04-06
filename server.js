@@ -10,16 +10,15 @@ const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const documentRoutes = require('./routes/document');
-// const swaggerUI = require('swagger-ui-express');
-// const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
 const app = express();
 dotenv.config({ path: './config/.env' });
 
-
+const swaggerDoc = require('./swagger.json');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 
 require('./config/passport')(passport);
 
@@ -39,13 +38,14 @@ app.use(passport.session());
 
 
 //Routes
-app.use('/', indexRoutes);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
+// app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/admin/documents', documentRoutes);
 app.use('/api/user', userRoutes);
 
 const PORT = process.env.PORT || 3000;
-const start = async () => {
+const start = async() => {
     try {
         await connectDB();
         app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));

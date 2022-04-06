@@ -6,6 +6,6 @@ const { getDocumentsUser, changeStatus } = require('../controllers/usercontrolle
 
 
 router.get('/', authenticationMiddleware, getDocumentsUser);
-router.patch('/', authenticationMiddleware, changeStatus);
+router.patch('/:id/change-status', authenticationMiddleware, changeStatus);
 
 module.exports = router;
