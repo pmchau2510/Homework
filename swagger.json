@@ -46,14 +46,14 @@
         "application/json"
     ],
     "paths": {
-        "/auth/login": {
+        "/auth/admin/login": {
             "post": {
                 "tags": [
                     "auth"
                 ],
-                "summary": "Login with name and password (admin)",
+                "summary": "Login with username and password (admin)",
                 "description": "",
-                "operationId": "addPet",
+                "operationId": "login",
                 "consumes": [
                     "application/json"
                 ],
@@ -66,13 +66,57 @@
                     "description": "add username and password",
                     "required": true,
                     "schema": {
-                        "name": "string",
-                        "password": "string"
-                    },
-                    "example": {
-                        "name": "admin",
-                        "password": "fsdfsd*"
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string"
+                            },
+                            "password": {
+                                "type": "string"
+                            }
 
+                        }
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "msg : 'success', token: token, role:role"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/auth/admin/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register with username and password (admin)",
+                "description": "",
+                "operationId": "register",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "description": "create username and password",
+                    "required": true,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string"
+                            },
+                            "password": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }],
                 "responses": {
@@ -86,7 +130,7 @@
             }
         },
         "/auth/google": {
-            "get": {
+            "post": {
                 "tags": [
                     "auth"
                 ],
@@ -106,27 +150,6 @@
                 }
             }
         },
-        "/auth/google/callback": {
-            "get": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Oauth 2.0",
-                "produces": [
-                    "application/xml",
-                    "application/json"
-                ],
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-
-                    }
-
-                }
-
-            }
-        },
         "/auth/logout": {
             "get": {
                 "tags": [
@@ -140,8 +163,7 @@
                 "parameters": [],
                 "responses": {
                     "200": {
-                        "description": "successful operation"
-
+                        "description": "messae: 'You are logged out'"
                     }
                 }
             }
