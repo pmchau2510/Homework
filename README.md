@@ -16,6 +16,8 @@
 - End of document - Allow User to Sign Off / Confirm that they read the document
 - Change the status of document if already be confirmed by user
 
+# Swagger
+[a link] https://homeworkterralogic.herokuapp.com/api-docs/
 ## Running
 Install Dependencies
 ```npm install```
