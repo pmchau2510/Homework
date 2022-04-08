@@ -3,56 +3,57 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
 const googleOAuth = require('../utils/googleOAuth');
-const jwt = require('jsonwebtoken');
+const generateToken = require('../utils/generateToken');
 
 const creatUserGoogle = asyncHandler(async(req, res) => {
-    const idToken = req.body.idToken;
+    const idToken = req.body.data;
+    //  console.log(idToken);
     const profile = await googleOAuth.getProfileInfo(idToken);
-    const user = await User.findOne({ socialId: profile.sub });
+    // console.log(profile);
+    let user = await User.findOne({ socialId: profile.sub });
+    // console.log(user);
     if (!user) {
         const body = {
             socialId: profile.sub,
-            name: profile.displayName,
-            avatar: profile.photos[0].value,
+            name: profile.name,
+            avatar: profile.picture,
         };
         user = await User.create(body);
     }
-    const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: '1d' });
     const data = {
-        socialId: profile.sub,
-        name: profile.name,
-        avatar: profile.photos[0].value,
-        token,
+        socialId: user.socialId,
+        name: user.name,
+        avatar: user.avatar,
+        role: user.role,
+        token: generateToken(user._id),
     };
     res.status(200).json({ data });
 
 });
 
-const logoutUser = asyncHandler((req, res) => {
-    req.logout();
-    res.status(200).json({
-        messae: "You are logged out "
-    });
-});
 
-const registerAdmin = asyncHandler(async(req, res) => {
-    const body = req.body;
-    const isUser = await User.findOne({ name: body.name });
 
-    if (!isUser) {
-        const user = new User(body);
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
-        return user.save().then((doc) => res.status(201).send(doc));
-    }
-    return res.status(400).json({ message: "account already exists" });
-});
+// const registerAdmin = asyncHandler(async(req, res) => {
+//     const body = req.body;
+//     const isUser = await User.findOne({ name: body.name });
+
+//     if (!isUser) {
+//         const user = new User({
+//             ...body,
+//             role: 9
+//         });
+//         const salt = await bcrypt.genSalt(10);
+//         user.password = await bcrypt.hash(user.password, salt);
+//         return user.save().then((doc) => res.status(201).send(doc));
+//     }
+//     return res.status(400).json({ message: "account already exists" });
+// });
 
 
 const loginAdmin = asyncHandler(async(req, res, next) => {
     passport.authenticate(
         'login',
-        async(err, user, info) => {
+        async(err, user) => {
             try {
                 if (err || !user) {
                     return res.status(400).json({ error: 'Invalid input' });
@@ -63,9 +64,8 @@ const loginAdmin = asyncHandler(async(req, res, next) => {
                         if (error) return next(error);
                         console.log(user);
                         const body = { _id: user._id, name: user.name, role: user.role };
-                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-                        return res.status(200).json({ body, token });
+                        return res.status(200).json({ body, token: generateToken(user._id) });
                     }
                 );
             } catch (error) {
@@ -76,7 +76,6 @@ const loginAdmin = asyncHandler(async(req, res, next) => {
 });
 module.exports = {
     creatUserGoogle,
-    logoutUser,
-    registerAdmin,
+    // registerAdmin,
     loginAdmin,
 }

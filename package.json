@@ -16,11 +16,12 @@
         "connect-mongo": "^4.6.0",
         "cors": "^2.8.5",
         "dotenv": "^16.0.0",
-        "ejs": "^3.1.6",
         "express": "^4.17.3",
         "express-async-handler": "^1.2.0",
         "express-session": "^1.17.2",
+        "fs": "0.0.1-security",
         "google-auth-library": "^7.14.1",
+        "helmet": "^5.0.2",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^6.2.9",
         "mongoose-delete": "^0.5.4",
@@ -29,9 +30,7 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-local": "^1.0.0",
-        "swagger-jsdoc": "^6.2.0",
-        "swagger-ui-express": "^4.3.0",
-        "yamljs": "^0.3.0"
+        "swagger-ui-express": "^4.3.0"
     },
     "devDependencies": {
         "nodemon": "^2.0.15"

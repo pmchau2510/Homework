@@ -7,7 +7,14 @@ module.exports = {
         if (req.isAuthenticated() && req.user.role == 9) {
             return next();
         } else {
-            res.status(200).json({ message: 'you do not have access' });
+            res.status(400).json({ message: 'You do not have access' });
+        }
+    },
+    isUser: (req, res, next) => {
+        if (req.user.role == 0) {
+            return next();
+        } else {
+            res.status(400).json({ message: 'You do not have access' });
         }
     },
     authenticationMiddleware: asyncHandler(async(req, res, next) => {
@@ -18,7 +25,9 @@ module.exports = {
         }
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.user._id).select('-password');
+        // console.log(req.user);
+        // console.log(decoded.id)
+        req.user = await User.findById(decoded.id).select('-password');
         next();
     }),
 }

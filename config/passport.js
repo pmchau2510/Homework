@@ -3,35 +3,35 @@ const User = require('../models/User');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 module.exports = (passport) => {
-    passport.use(
-        new GoogleStrategy({
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: '/auth/google/callback',
-            },
-            async(accessToken, refreshToken, profile, done) => {
-                // console.log(profile);
-                // console.log(accessToken);
-                const newUser = {
-                    socialId: profile.id,
-                    name: profile.displayName,
-                    avatar: profile.photos[0].value,
-                }
-                try {
-                    let user = await User.findOne({ socialId: profile.id })
-                    if (user) {
-                        return done(null, user)
-                    } else {
-                        user = await User.create(newUser)
-                        return done(null, user);
-                    }
-                } catch (err) {
-                    console.error(err)
-                }
-            }
-        )
+    // passport.use(
+    //     new GoogleStrategy({
+    //             clientID: process.env.GOOGLE_CLIENT_ID,
+    //             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    //             callbackURL: '/auth/google/callback',
+    //         },
+    //         async(accessToken, refreshToken, profile, done) => {
+    //             // console.log(profile);
+    //             // console.log(accessToken);
+    //             const newUser = {
+    //                 socialId: profile.id,
+    //                 name: profile.displayName,
+    //                 avatar: profile.photos[0].value,
+    //             }
+    //             try {
+    //                 let user = await User.findOne({ socialId: profile.id })
+    //                 if (user) {
+    //                     return done(null, user)
+    //                 } else {
+    //                     user = await User.create(newUser)
+    //                     return done(null, user);
+    //                 }
+    //             } catch (err) {
+    //                 console.error(err)
+    //             }
+    //         }
+    //     )
 
-    );
+    // );
 
     passport.use('login', new LocalStrategy({ usernameField: 'name', passwordField: 'password' }, async(name, password, done) => {
         try {
