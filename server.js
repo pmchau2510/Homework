@@ -1,4 +1,5 @@
 const express = require('express');
+const { catchError, notFound } = require("./middlewares/error");
 const connectDB = require('./config/connect');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -11,6 +12,7 @@ const documentRoutes = require('./routes/document');
 // const helmet = require('helmet');
 const swaggerUI = require('swagger-ui-express');
 const path = require('path');
+
 const app = express();
 dotenv.config({ path: './config/.env' });
 
@@ -42,8 +44,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/documents', documentRoutes);
 app.use('/api/user', userRoutes);
 
+app.use(notFound);
+app.use(catchError);
 const PORT = process.env.PORT || 3000;
-const start = async() => {
+const start = async () => {
     try {
         await connectDB();
         app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { isAdmin, authenticationMiddleware } = require('../middleware/auth');
+const { isAdmin, authenticationMiddleware } = require('../middlewares/auth');
 const {
     getAllDocs,
     getDoc,
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 
 const uploadStorage = multer({
     storage: storage,
-    fileFilter: function(req, file, cb) {
+    fileFilter: function (req, file, cb) {
         // console.log(file.originalname)
         const dot = path.extname(file.originalname);
         if (dot !== ".pdf" && dot !== ".doc" && dot !== ".docx") {

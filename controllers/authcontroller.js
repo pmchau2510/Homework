@@ -1,11 +1,12 @@
 const passport = require('passport');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const asyncHandler = require('express-async-handler');
+const catchAsync = require("../middlewares/async");
+const ApiError = require("../utils/ApiError");
 const googleOAuth = require('../utils/googleOAuth');
 const generateToken = require('../utils/generateToken');
 
-const creatUserGoogle = asyncHandler(async(req, res) => {
+const creatUserGoogle = catchAsync(async (req, res) => {
     const idToken = req.body.data;
     //  console.log(idToken);
     const profile = await googleOAuth.getProfileInfo(idToken);
@@ -50,27 +51,23 @@ const creatUserGoogle = asyncHandler(async(req, res) => {
 // });
 
 
-const loginAdmin = asyncHandler(async(req, res, next) => {
+const loginAdmin = catchAsync(async (req, res, next) => {
     passport.authenticate(
         'login',
-        async(err, user) => {
-            try {
-                if (err || !user) {
-                    return res.status(400).json({ error: 'Invalid input' });
-                }
-                req.login(
-                    user,
-                    async(error) => {
-                        if (error) return next(error);
-                        console.log(user);
-                        const body = { _id: user._id, name: user.name, role: user.role };
-
-                        return res.status(200).json({ body, token: generateToken(user._id) });
-                    }
-                );
-            } catch (error) {
-                return next(error);
+        async (err, user) => {
+            if (err || !user) {
+                return res.status(404).json({ message: 'Invalid input' });
             }
+            req.login(
+                user,
+                async (error) => {
+                    if (error) return next(error);
+                    console.log(user);
+                    const body = { _id: user._id, name: user.name, role: user.role };
+
+                    return res.status(200).json({ body, token: generateToken(user._id) });
+                }
+            );
         }
     )(req, res, next);
 });

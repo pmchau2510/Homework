@@ -7,10 +7,12 @@
     },
     "host": "localhost:3000",
     "basePath": "/",
-    "tags": [{
+    "tags": [
+        {
             "name": "auth",
             "description": "Authenticate"
-        }, {
+        },
+        {
             "name": "User"
         },
         {
@@ -57,24 +59,25 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "in": "body",
-                    "name": "body",
-                    "description": "add name and password",
-                    "required": true,
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "password": {
-                                "type": "string"
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "add name and password",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
                             }
-
                         }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "msg : 'success', token: token, role:role"
@@ -100,13 +103,10 @@
                 "responses": {
                     "200": {
                         "description": "successful operation"
-
                     }
-
                 }
             }
         },
-
         "/api/admin/documents/confirm/:id": {
             "get": {
                 "tags": [
@@ -117,14 +117,15 @@
                     "application/xml",
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
-
                     "200": {
                         "schema": {
                             "$ref": "#/definitions/Document"
@@ -146,7 +147,8 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
+                "parameters": [
+                    {
                         "name": "id",
                         "in": "path",
                         "required": true,
@@ -159,8 +161,12 @@
                         "type": "array",
                         "example": {
                             "userIds": [
-                                { "user": "id1" },
-                                { "user": "id2" }
+                                {
+                                    "user": "id1"
+                                },
+                                {
+                                    "user": "id2"
+                                }
                             ]
                         }
                     }
@@ -193,12 +199,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "pageNumber",
-                    "in": "query",
-                    "description": "Page for pagination.",
-                    "type": "number"
-                }],
+                "parameters": [
+                    {
+                        "name": "pageNumber",
+                        "in": "query",
+                        "description": "Page for pagination.",
+                        "type": "number"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "schema": {
@@ -222,22 +230,84 @@
                 "consumes": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "docs",
-                    "in": "body",
-                    "required": true,
-                    "type": "array",
-                    "example": {
-                        "title": "name title",
-                        "url": "uploads/example.pdf "
+                "parameters": [
+                    {
+                        "name": "docs",
+                        "in": "body",
+                        "required": true,
+                        "type": "array",
+                        "example": {
+                            "title": "name title",
+                            "url": "uploads/example.pdf "
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Created Success"
                     },
                     "400": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/admin/documents/trashDocs": {
+            "get": {
+                "tags": [
+                    "Document"
+                ],
+                "description": "Get all deleted list documents.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "pageNumber",
+                        "in": "query",
+                        "description": "Page for pagination.",
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/Document"
+                        },
+                        "description": "There are no documents."
+                    },
+                    "400": {
+                        "description": "Server Failure."
+                    }
+                }
+            }
+        },
+        "/api/admin/document/:id/restore": {
+            "patch": {
+                "tags": [
+                    "Document"
+                ],
+                "description": "Restore deleted documents by id",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restore success"
+                    },
+                    "404": {
+                        "description": "No doc with id"
                     }
                 }
             }
@@ -251,12 +321,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "schema": {
@@ -277,7 +349,8 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
+                "parameters": [
+                    {
                         "name": "id",
                         "in": "path",
                         "required": true,
@@ -307,12 +380,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Delete success"
@@ -335,12 +410,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "pageNumber",
-                    "in": "query",
-                    "description": "Page for pagination.",
-                    "type": "number"
-                }],
+                "parameters": [
+                    {
+                        "name": "pageNumber",
+                        "in": "query",
+                        "description": "Page for pagination.",
+                        "type": "number"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "schema": {
@@ -363,12 +440,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Confirm success"
@@ -388,12 +467,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Confirm success"
@@ -405,7 +486,6 @@
             }
         }
     },
-
     "definitions": {
         "Document": {
             "type": "object",

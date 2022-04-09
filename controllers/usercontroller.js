@@ -1,6 +1,8 @@
 const Confirm = require('../models/Confirm');
-const asyncHandler = require('express-async-handler');
-const getDocumentsUser = asyncHandler(async(req, res) => {
+const catchAsync = require("../middlewares/async");
+const ApiError = require("../utils/ApiError");
+
+const getDocumentsUser = catchAsync(async (req, res) => {
     // console.log(req.user);
     const pageSize = 12;
     const page = Number(req.query.pageNumber) || 1;
@@ -12,7 +14,8 @@ const getDocumentsUser = asyncHandler(async(req, res) => {
         .skip(pageSize * (page - 1))
         .sort(sort)
         .populate('docId')
-        // console.log(confirms);
+    // console.log(confirms);
+    if (!confirms) throw new ApiError(404, "Confirmation document not found");
     let docConfirms = [];
 
     confirms.map((c) => (docConfirms.push({
@@ -24,7 +27,7 @@ const getDocumentsUser = asyncHandler(async(req, res) => {
     })));
     res.status(200).json({ docConfirms, page, pages: Math.ceil(count / pageSize), count });
 });
-const changeReadingStatus = asyncHandler(async(req, res) => {
+const changeReadingStatus = catchAsync(async (req, res) => {
     const { id: docId } = req.params;
     const userId = req.user._id;
 
@@ -45,16 +48,14 @@ const changeReadingStatus = asyncHandler(async(req, res) => {
             });
             res.status(200).json({ statusUser });
         } else if (confirm.status === "Completed") {
-            res.status(400).json({ message: "state cannot be changed" });
+            throw new ApiError(404, "state cannot be changed");
         }
 
-    } else {
-        res.status(400).json({ message: "Not found" });
     }
 
 });
 
-const changeCompletedStatus = asyncHandler(async(req, res) => {
+const changeCompletedStatus = catchAsync(async (req, res) => {
     const { id: docId } = req.params;
     const userId = req.user._id;
 
@@ -73,7 +74,7 @@ const changeCompletedStatus = asyncHandler(async(req, res) => {
         }
 
     } else {
-        res.status(400).json({ message: "Not found" });
+        throw new ApiError(404, "Not Found");
     }
 
 });
