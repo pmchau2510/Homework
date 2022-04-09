@@ -15,6 +15,7 @@ const {
 const multer = require('multer');
 const path = require('path');
 
+const maxSize = 1 * 1000 * 1000;
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "./public/uploads/");
@@ -26,8 +27,9 @@ const storage = multer.diskStorage({
 
 const uploadStorage = multer({
     storage: storage,
-    fileFilter: function (req, file, cb) {
-        // console.log(file.originalname)
+    limits: { fileSize: maxSize },
+    fileFilter: (req, file, cb) => {
+        // console.log(file)
         const dot = path.extname(file.originalname);
         if (dot !== ".pdf" && dot !== ".doc" && dot !== ".docx") {
             return cb(null, false, new Error('Just pdf, doc, docx'));

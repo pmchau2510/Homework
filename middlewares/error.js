@@ -1,5 +1,5 @@
 const catchError = (err, req, res, next) => {
-    console.log("Error:", err);
+    // console.log("Error:", err);
     if (err.name === 'ValidationError') {
         const errors = err.errors;
         const keys = Object.keys(errors);
