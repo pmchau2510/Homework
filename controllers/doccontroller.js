@@ -4,8 +4,8 @@ const User = require('../models/User');
 const catchAsync = require("../middlewares/async");
 const ApiError = require("../utils/ApiError");
 const deleteFile = require('../utils/deleteFile');
-const getAllDocs = catchAsync(async (req, res) => {
-    const pageSize = 12;
+const getAllDocs = catchAsync(async(req, res) => {
+    const pageSize = 5;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
 
@@ -19,22 +19,22 @@ const getAllDocs = catchAsync(async (req, res) => {
     res.status(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
 });
 
-const trashGetAllDocs = catchAsync(async (req, res) => {
-    const pageSize = 12;
-    const page = Number(req.query.pageNumber) || 1;
-    const sort = req.query.sort || '-createdAt';
+const trashGetAllDocs = catchAsync(async(req, res) => {
+    // const pageSize = 5;
+    // const page = Number(req.query.pageNumber) || 1;
+    // const sort = req.query.sort || '-createdAt';
 
-    const count = await Document.countDocuments({});
+    // const count = await Document.countDocuments({});
     const docs = await Document.findDeleted({})
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .sort(sort)
+        // .limit(pageSize)
+        // .skip(pageSize * (page - 1))
+        // .sort(sort)
     if (!docs) throw new ApiError(404, "Document Not Found");
     // console.log(docs)
-    res.status(200).json({ docs, page, pages: Math.ceil(count / pageSize), count });
+    res.status(200).json({ docs });
 });
 
-const restoreDoc = catchAsync(async (req, res) => {
+const restoreDoc = catchAsync(async(req, res) => {
 
     await Document.restore({ _id: req.params.id });
     await Confirm.restore({ docId: req.params.id });
@@ -43,12 +43,12 @@ const restoreDoc = catchAsync(async (req, res) => {
 
 
 
-const getDoc = catchAsync(async (req, res) => {
+const getDoc = catchAsync(async(req, res) => {
     const doc = await Document.findById(req.params.id);
     res.status(200).json({ doc });
 });
 
-const getAllUsers = catchAsync(async (req, res) => {
+const getAllUsers = catchAsync(async(req, res) => {
     const document = await Document.findById(req.params.id);
     const userConfirms = [];
     let query = { role: { $ne: 9 } };
@@ -68,11 +68,12 @@ const getAllUsers = catchAsync(async (req, res) => {
     }
 });
 
-const createDoc = catchAsync(async (req, res) => {
+const createDoc = catchAsync(async(req, res) => {
     // console.log(req.file);
     if (!req.file) {
         throw new ApiError(404, "Invalid file, accepted file (pdf, .doc, .docx)");
     }
+
     if (!req.body.title) {
         let fileName = req.file.filename;
         //14 is cut string of type Date()
@@ -87,27 +88,31 @@ const createDoc = catchAsync(async (req, res) => {
     res.status(200).json({ docs });
 });
 
-const updateDoc = catchAsync(async (req, res) => {
+const updateDoc = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const document = await Document.findById({ _id: docId });
     let doc;
 
     if (document) {
         if (!req.file) {
-            doc = await Document.findOneAndUpdate({ _id: docId }, { ...req.body }, {
+            doc = await Document.findOneAndUpdate({ _id: docId }, {...req.body }, {
                 new: true,
                 runValidators: true,
             });
         } else {
             deleteFile(`.\\public\\${document.url}`);
-            doc = await Confirm.updateMany({ docId: docId }, { status: 'Open' });
+            doc = await Document.findOneAndUpdate({ _id: docId }, {...req.body, url: `/uploads/${req.file.filename}` }, {
+                new: true,
+                runValidators: true,
+            });
+            await Confirm.updateMany({ docId: docId }, { status: 'Open' });
         }
         return res.status(200).json({ doc });
     }
 
 });
 
-const deleteDoc = catchAsync(async (req, res) => {
+const deleteDoc = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const doc = await Document.delete({ _id: docId });
     await Confirm.delete({ docId });
@@ -116,7 +121,7 @@ const deleteDoc = catchAsync(async (req, res) => {
 
 
 
-const assignUsers = catchAsync(async (req, res) => {
+const assignUsers = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const userIds = req.body;
     // console.log(docId);
@@ -129,7 +134,7 @@ const assignUsers = catchAsync(async (req, res) => {
         const newUserConfirm = [];
         const oldConfirms = await Confirm.find({ docId });
         const [...newUsers] = userIds;
-        console.log(newUsers);
+        // console.log(newUsers);
         if (oldConfirms) {
             oldConfirms.map(e => userAssign.push(e.userId.toString()));
         }

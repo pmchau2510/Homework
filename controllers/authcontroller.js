@@ -6,7 +6,7 @@ const ApiError = require("../utils/ApiError");
 const googleOAuth = require('../utils/googleOAuth');
 const generateToken = require('../utils/generateToken');
 
-const creatUserGoogle = catchAsync(async (req, res) => {
+const creatUserGoogle = catchAsync(async(req, res) => {
     const idToken = req.body.data;
     //  console.log(idToken);
     const profile = await googleOAuth.getProfileInfo(idToken);
@@ -34,7 +34,7 @@ const creatUserGoogle = catchAsync(async (req, res) => {
 
 
 
-// const registerAdmin = asyncHandler(async(req, res) => {
+// const registerAdmin = catchAsync(async(req, res) => {
 //     const body = req.body;
 //     const isUser = await User.findOne({ name: body.name });
 
@@ -51,18 +51,18 @@ const creatUserGoogle = catchAsync(async (req, res) => {
 // });
 
 
-const loginAdmin = catchAsync(async (req, res, next) => {
+const loginAdmin = catchAsync(async(req, res, next) => {
     passport.authenticate(
         'login',
-        async (err, user) => {
+        async(err, user) => {
             if (err || !user) {
                 return res.status(404).json({ message: 'Invalid input' });
             }
             req.login(
                 user,
-                async (error) => {
+                async(error) => {
                     if (error) return next(error);
-                    console.log(user);
+                    // console.log(user);
                     const body = { _id: user._id, name: user.name, role: user.role };
 
                     return res.status(200).json({ body, token: generateToken(user._id) });

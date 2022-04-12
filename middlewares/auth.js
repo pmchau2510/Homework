@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
+const catchAsync = require("../middlewares/async");
+const ApiError = require("../utils/ApiError");
+
 module.exports = {
 
     isAdmin: (req, res, next) => {
@@ -17,16 +20,16 @@ module.exports = {
             res.status(400).json({ message: 'You do not have access' });
         }
     },
-    authenticationMiddleware: asyncHandler(async(req, res, next) => {
+    authenticationMiddleware: catchAsync(async(req, res, next) => {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(400).json({ msg: "No token provided" });
+            throw new ApiError(404, "No token provided");
         }
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         // console.log(req.user);
-        // console.log(decoded.id)
+        // console.log(decoded.id)  
         req.user = await User.findById(decoded.id).select('-password');
         next();
     }),

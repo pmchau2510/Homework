@@ -2,19 +2,19 @@ const Confirm = require('../models/Confirm');
 const catchAsync = require("../middlewares/async");
 const ApiError = require("../utils/ApiError");
 
-const getDocumentsUser = catchAsync(async (req, res) => {
+const getDocumentsUser = catchAsync(async(req, res) => {
     // console.log(req.user);
-    const pageSize = 12;
+    const pageSize = 5;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
     // console.log(sort);
-    const count = await Confirm.countDocuments({});
+    const count = await Confirm.countDocuments({ userId: req.user._id });
     const confirms = await Confirm.find({ userId: req.user._id })
         .limit(pageSize)
         .skip(pageSize * (page - 1))
         .sort(sort)
         .populate('docId')
-    // console.log(confirms);
+        // console.log(confirms);
     if (!confirms) throw new ApiError(404, "Confirmation document not found");
     let docConfirms = [];
 
@@ -27,12 +27,14 @@ const getDocumentsUser = catchAsync(async (req, res) => {
     })));
     res.status(200).json({ docConfirms, page, pages: Math.ceil(count / pageSize), count });
 });
-const changeReadingStatus = catchAsync(async (req, res) => {
+const changeReadingStatus = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const userId = req.user._id;
 
     const confirm = await Confirm.findOne({ userId: userId, docId }).populate('docId');
-
+    if (confirm.status === "Completed") {
+        throw new ApiError(404, "state cannot be changed");
+    }
     if (confirm) {
         if (confirm.docId.url.includes('.doc')) {
             const statusUser = await Confirm.findOneAndUpdate({ userId, docId }, { status: "Completed" }, {
@@ -47,15 +49,13 @@ const changeReadingStatus = catchAsync(async (req, res) => {
                 runValidators: true,
             });
             res.status(200).json({ statusUser });
-        } else if (confirm.status === "Completed") {
-            throw new ApiError(404, "state cannot be changed");
         }
 
     }
 
 });
 
-const changeCompletedStatus = catchAsync(async (req, res) => {
+const changeCompletedStatus = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const userId = req.user._id;
 
