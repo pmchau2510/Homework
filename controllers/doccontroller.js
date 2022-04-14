@@ -5,7 +5,7 @@ const catchAsync = require("../middlewares/async");
 const ApiError = require("../utils/ApiError");
 const deleteFile = require('../utils/deleteFile');
 const getAllDocs = catchAsync(async(req, res) => {
-    const pageSize = 5;
+    const pageSize = 7;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
 
@@ -20,7 +20,7 @@ const getAllDocs = catchAsync(async(req, res) => {
 });
 
 const trashGetAllDocs = catchAsync(async(req, res) => {
-    // const pageSize = 5;
+    // const pageSize = 7;
     // const page = Number(req.query.pageNumber) || 1;
     // const sort = req.query.sort || '-createdAt';
 
@@ -125,7 +125,7 @@ const assignUsers = catchAsync(async(req, res) => {
     const { id: docId } = req.params;
     const userIds = req.body;
     // console.log(docId);
-    // console.log(req.body);
+    console.log(req.body);
 
     const doc = await Document.findById({ _id: docId });
     // console.log(doc);

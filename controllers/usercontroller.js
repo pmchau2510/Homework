@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 
 const getDocumentsUser = catchAsync(async(req, res) => {
     // console.log(req.user);
-    const pageSize = 5;
+    const pageSize = 7;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
     // console.log(sort);
@@ -43,12 +43,12 @@ const changeReadingStatus = catchAsync(async(req, res) => {
             });
             return res.status(200).json({ statusUser });
         }
-        if (confirm.status == 'Open') {
+        if (confirm.status === 'Open') {
             const statusUser = await Confirm.findOneAndUpdate({ userId, docId }, { status: "Reading" }, {
                 new: true,
                 runValidators: true,
             });
-            res.status(200).json({ statusUser });
+            return res.status(200).json({ statusUser });
         }
 
     }

@@ -2,7 +2,6 @@ const passport = require('passport');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const catchAsync = require("../middlewares/async");
-const ApiError = require("../utils/ApiError");
 const googleOAuth = require('../utils/googleOAuth');
 const generateToken = require('../utils/generateToken');
 

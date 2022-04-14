@@ -47,7 +47,7 @@ app.use('/api/user', userRoutes);
 app.use(notFound);
 app.use(catchError);
 const PORT = process.env.PORT || 3000;
-const start = async () => {
+const start = async() => {
     try {
         await connectDB();
         app.listen(PORT, console.log(`Server is listening in PORT ${PORT}...`));

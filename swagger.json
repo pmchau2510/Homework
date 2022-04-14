@@ -7,8 +7,7 @@
     },
     "host": "localhost:3000",
     "basePath": "/",
-    "tags": [
-        {
+    "tags": [{
             "name": "auth",
             "description": "Authenticate"
         },
@@ -27,17 +26,13 @@
         "https"
     ],
     "securityDefinitions": {
-        "adminToken": {
-            "type": "token",
-            "name": "adminToken",
-            "in": "header"
-        },
-        "userToken": {
-            "type": "token",
-            "name": "userToken",
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
             "in": "header"
         }
     },
+
     "consumes": [
         "application/json"
     ],
@@ -45,7 +40,7 @@
         "application/json"
     ],
     "paths": {
-        "/auth/admin/login": {
+        "/api/auth/admin/login": {
             "post": {
                 "tags": [
                     "auth"
@@ -59,36 +54,34 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "add name and password",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "password": {
-                                    "type": "string"
-                                }
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "description": "add name and password",
+                    "required": true,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "password": {
+                                "type": "string"
                             }
                         }
                     }
-                ],
+                }],
                 "responses": {
                     "200": {
                         "description": "msg : 'success', token: token, role:role"
                     },
-                    "400": {
+                    "404": {
                         "description": "Invalid input"
                     }
                 }
             }
         },
-        "/auth/google": {
+        "/api/auth/google": {
             "post": {
                 "tags": [
                     "auth"
@@ -99,7 +92,20 @@
                     "application/xml",
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "description": "idToken",
+                    "required": true,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "data": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -107,38 +113,38 @@
                 }
             }
         },
-        "/api/admin/documents/confirm/:id": {
+        "/api/admin/documents/confirm/{id}": {
             "get": {
                 "tags": [
                     "Admin"
                 ],
                 "description": "Get list users for assign document",
                 "produces": [
-                    "application/xml",
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/Document"
+                            "$ref": "#/definitions/User"
                         },
-                        "description": "Ok"
+                        "description": "Unconfirmed user list"
                     },
-                    "400": {
+                    "404": {
                         "description": "Internal Server Error"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
-        "/api/admin/documents/:id/assign": {
+        "/api/admin/documents/{id}/assign": {
             "post": {
                 "tags": [
                     "Admin"
@@ -147,8 +153,7 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
+                "parameters": [{
                         "name": "id",
                         "in": "path",
                         "required": true,
@@ -160,8 +165,7 @@
                         "required": true,
                         "type": "array",
                         "example": {
-                            "userIds": [
-                                {
+                            "userIds": [{
                                     "user": "id1"
                                 },
                                 {
@@ -184,7 +188,10 @@
                     "400": {
                         "description": "Internal Server Error"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
         "/api/admin/documents": {
@@ -199,25 +206,57 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "pageNumber",
-                        "in": "query",
-                        "description": "Page for pagination.",
-                        "type": "number"
-                    }
-                ],
+                "parameters": [{
+                    "name": "pageNumber",
+                    "in": "query",
+                    "description": "Page for pagination.",
+                    "type": "number"
+                }],
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/Document"
+                            "type": "object",
+                            "example": {
+                                "docs": [{
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         },
-                        "description": "There are no documents."
+                        "description": "There are documents."
                     },
-                    "400": {
+                    "404": {
                         "description": "Server Failure."
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             },
             "post": {
                 "tags": [
@@ -230,26 +269,25 @@
                 "consumes": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "docs",
-                        "in": "body",
-                        "required": true,
-                        "type": "array",
-                        "example": {
-                            "title": "name title",
-                            "url": "uploads/example.pdf "
-                        }
-                    }
-                ],
+                "parameters": [{
+                    "name": "file",
+                    "in": "formData",
+                    "required": true,
+                    "type": "file",
+                    "description": "The file to upload"
+
+                }],
                 "responses": {
                     "200": {
                         "description": "Created Success"
                     },
-                    "400": {
-                        "description": "Internal Server Error"
+                    "404": {
+                        "description": "Invalid file, accepted file (pdf, .doc, .docx)"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
         "/api/admin/documents/trashDocs": {
@@ -264,28 +302,62 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "pageNumber",
-                        "in": "query",
-                        "description": "Page for pagination.",
-                        "type": "number"
-                    }
-                ],
+                "parameters": [{
+                    "name": "pageNumber",
+                    "in": "query",
+                    "description": "Page for pagination.",
+                    "type": "number"
+                }],
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/Document"
+                            "type": "object",
+                            "example": {
+                                "docs": [{
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        },
+                                        "deletedAt": { "type": "string" }
+                                    },
+                                    {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        },
+                                        "deletedAt": { "type": "string" }
+                                    }
+                                ]
+                            }
                         },
-                        "description": "There are no documents."
+                        "description": "There are documents."
                     },
-                    "400": {
+                    "404": {
                         "description": "Server Failure."
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
-        "/api/admin/document/:id/restore": {
+        "/api/admin/documents/{id}/restore": {
             "patch": {
                 "tags": [
                     "Document"
@@ -294,14 +366,12 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
                         "description": "Restore success"
@@ -309,10 +379,13 @@
                     "404": {
                         "description": "No doc with id"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
-        "/api/admin/document/:docId": {
+        "/api/admin/documents/{id}": {
             "get": {
                 "tags": [
                     "Document"
@@ -321,25 +394,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
                         "schema": {
                             "$ref": "#/definitions/Document"
                         },
-                        "description": "OK"
+                        "description": "Successfully"
                     },
                     "404": {
                         "description": "Not Found"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             },
             "patch": {
                 "tags": [
@@ -349,8 +423,7 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
+                "parameters": [{
                         "name": "id",
                         "in": "path",
                         "required": true,
@@ -358,9 +431,10 @@
                     },
                     {
                         "name": "file",
-                        "in": "body",
+                        "in": "formData",
                         "required": true,
-                        "type": "file"
+                        "type": "file",
+                        "description": "The file to upload"
                     }
                 ],
                 "responses": {
@@ -370,7 +444,10 @@
                     "404": {
                         "description": "No doc with id"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             },
             "delete": {
                 "tags": [
@@ -380,14 +457,12 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
                         "description": "Delete success"
@@ -395,7 +470,10 @@
                     "404": {
                         "description": "No doc with id"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
         "/api/user/documents": {
@@ -410,28 +488,59 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "pageNumber",
-                        "in": "query",
-                        "description": "Page for pagination.",
-                        "type": "number"
-                    }
-                ],
+                "parameters": [{
+                    "name": "pageNumber",
+                    "in": "query",
+                    "description": "Page for pagination.",
+                    "type": "number"
+                }],
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/Document"
+                            "example": {
+                                "docs": [{
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "updateAt": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         },
-                        "description": "There are no documents."
+                        "description": "Specified User Document."
                     },
-                    "400": {
+                    "404": {
                         "description": "Server Failure."
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
-        "api/user/:id/changeReadingStatus": {
+        "api/user/{id}/changeReadingStatus": {
             "get": {
                 "tags": [
                     "User"
@@ -440,25 +549,32 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
+                        "schema": {
+                            "example": {
+                                "statusUser": { "type": "string", "example": "Reading" }
+                            }
+
+                        },
                         "description": "Confirm success"
                     },
                     "404": {
                         "description": "Not Found"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         },
-        "api/user/:id/changeCompletedStatus": {
+        "api/user/{id}/changeCompletedStatus": {
             "get": {
                 "tags": [
                     "User"
@@ -467,22 +583,32 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }],
                 "responses": {
                     "200": {
+                        "schema": {
+                            "example": {
+                                "statusUser": {
+                                    "type": "string",
+                                    "example": "Completed"
+                                }
+                            }
+
+                        },
                         "description": "Confirm success"
                     },
                     "404": {
                         "description": "Not Found"
                     }
-                }
+                },
+                "security": [{
+                    "Bearer": []
+                }]
             }
         }
     },
@@ -512,11 +638,11 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "example": "Admin"
+                    "example": "User"
                 },
                 "role": {
                     "type": "number",
-                    "example": 9
+                    "example": 0
                 },
                 "password": {
                     "type": "string"
