@@ -1,17 +1,15 @@
 const passport = require('passport');
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const catchAsync = require("../middlewares/async");
+// const bcrypt = require('bcrypt');
+const catchAsync = require('../middlewares/async');
 const googleOAuth = require('../utils/googleOAuth');
 const generateToken = require('../utils/generateToken');
 
 const creatUserGoogle = catchAsync(async(req, res) => {
+
     const idToken = req.body.data;
-    //  console.log(idToken);
     const profile = await googleOAuth.getProfileInfo(idToken);
-    // console.log(profile);
     let user = await User.findOne({ socialId: profile.sub });
-    // console.log(user);
     if (!user) {
         const body = {
             socialId: profile.sub,
@@ -32,7 +30,6 @@ const creatUserGoogle = catchAsync(async(req, res) => {
 });
 
 
-
 // const registerAdmin = catchAsync(async(req, res) => {
 //     const body = req.body;
 //     const isUser = await User.findOne({ name: body.name });
@@ -46,11 +43,12 @@ const creatUserGoogle = catchAsync(async(req, res) => {
 //         user.password = await bcrypt.hash(user.password, salt);
 //         return user.save().then((doc) => res.status(201).send(doc));
 //     }
-//     return res.status(400).json({ message: "account already exists" });
+//     return res.status(400).json({ message: 'account already exists' });
 // });
 
 
 const loginAdmin = catchAsync(async(req, res, next) => {
+
     passport.authenticate(
         'login',
         async(err, user) => {

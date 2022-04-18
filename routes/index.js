@@ -1,22 +1,12 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.render('page')
-});
+const authRoutes = require('./auth');
+const userRoutes = require('./user');
+const documentRoutes = require('./document');
 
+router.use('/auth', authRoutes);
+router.use('/admin/documents', documentRoutes);
+router.use('/user', userRoutes);
 
-// router.get('/dashboard', authenticationMiddleware, (req, res) => {
-//     // console.log(req.user);
-//     res.status(202).json({
-//         message: "Dashboard",
-//         user: req.user
-//     });
-// });
-
-// router.get('/admindashboard', isAdmin, (req, res) => {
-//     res.status(202).json({
-//         message: "pass",
-//     });
-// });
-module.exports = router;
+module.exports = router

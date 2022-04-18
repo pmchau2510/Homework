@@ -1,10 +1,10 @@
 const Confirm = require('../models/Confirm');
-const catchAsync = require("../middlewares/async");
-const ApiError = require("../utils/ApiError");
+const catchAsync = require('../middlewares/async');
+const ApiError = require('../utils/ApiError');
 
 const getDocumentsUser = catchAsync(async(req, res) => {
     // console.log(req.user);
-    const pageSize = 7;
+    const pageSize = Number(req.query.pages) || 12;
     const page = Number(req.query.pageNumber) || 1;
     const sort = req.query.sort || '-createdAt';
     // console.log(sort);
@@ -15,7 +15,7 @@ const getDocumentsUser = catchAsync(async(req, res) => {
         .sort(sort)
         .populate('docId')
         // console.log(confirms);
-    if (!confirms) throw new ApiError(404, "Confirmation document not found");
+    if (!confirms) throw new ApiError(404, 'Confirmation document not found');
     let docConfirms = [];
 
     confirms.map((c) => (docConfirms.push({
@@ -32,23 +32,23 @@ const changeReadingStatus = catchAsync(async(req, res) => {
     const userId = req.user._id;
 
     const confirm = await Confirm.findOne({ userId: userId, docId }).populate('docId');
-    if (confirm.status === "Completed") {
-        throw new ApiError(404, "state cannot be changed");
+    if (confirm.status === 'C') {
+        throw new ApiError(404, 'state cannot be changed');
     }
     if (confirm) {
         if (confirm.docId.url.includes('.doc')) {
-            const statusUser = await Confirm.findOneAndUpdate({ userId, docId }, { status: "Completed" }, {
+            await Confirm.findOneAndUpdate({ userId, docId }, { status: 'C' }, {
                 new: true,
                 runValidators: true,
             });
-            return res.status(200).json({ statusUser });
+            return res.status(200).json({ status: 'C' });
         }
         if (confirm.status === 'Open') {
-            const statusUser = await Confirm.findOneAndUpdate({ userId, docId }, { status: "Reading" }, {
+            await Confirm.findOneAndUpdate({ userId, docId }, { status: 'R' }, {
                 new: true,
                 runValidators: true,
             });
-            return res.status(200).json({ statusUser });
+            return res.status(200).json({ status: 'R' });
         }
 
     }
@@ -63,18 +63,18 @@ const changeCompletedStatus = catchAsync(async(req, res) => {
 
     if (confirm) {
 
-        if (confirm.status === 'Reading') {
-            const statusUser = await Confirm.findOneAndUpdate({ userId, docId }, { status: "Completed" }, {
+        if (confirm.status === 'R') {
+            await Confirm.findOneAndUpdate({ userId, docId }, { status: 'C' }, {
                 new: true,
                 runValidators: true,
             });
-            res.status(200).json({ statusUser });
+            res.status(200).json({ status: 'C' });
         } else {
-            res.status(400).json({ status: confirm.status });
+            res.status(200).json({ status: confirm.status });
         }
 
     } else {
-        throw new ApiError(404, "Not Found");
+        throw new ApiError(404, 'Not Found');
     }
 
 });

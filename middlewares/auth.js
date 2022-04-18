@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken')
-const asyncHandler = require('express-async-handler');
+    // const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
-const catchAsync = require("../middlewares/async");
-const ApiError = require("../utils/ApiError");
+const Confirm = require('../models/Confirm');
+const Document = require('../models/Document');
+const catchAsync = require('../middlewares/async');
+const ApiError = require('../utils/ApiError');
 
 module.exports = {
 
@@ -24,7 +26,7 @@ module.exports = {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new ApiError(404, "No token provided");
+            throw new ApiError(404, 'No token provided');
         }
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -32,5 +34,28 @@ module.exports = {
         // console.log(decoded.id)  
         req.user = await User.findById(decoded.id).select('-password');
         next();
+    }),
+    checkRole: catchAsync(async(req, res, next) => {
+        // console.log(req.originalUrl);
+        let url = req.originalUrl.replace('/api/file', '');
+        url = url.replace(/%20/gi, ' ');
+        console.log(url);
+        if (req.user.role == 9) {
+            return next();
+        } else {
+            const confirms = await Confirm.find({ userId: req.user.id }).populate('docId');
+            let docConfirms = [];
+            confirms.map((c) => (docConfirms.push({
+                url: c.docId.url,
+            })));
+            // console.log(docConfirms);
+            const isCheck = docConfirms.some(e => { return e.url === url });
+            // console.log(isCheck);
+            if (isCheck) {
+                return next();
+            } else {
+                throw new ApiError(404, 'You do not have access');
+            }
+        }
     }),
 }
